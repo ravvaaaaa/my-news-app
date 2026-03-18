@@ -116,6 +116,8 @@ if st.session_state['news_pool']:
         with col2:
             st.markdown(f"**[{source}] [{clean_title}]({link})**")
         st.divider()
+else:
+    st.info("사이드바에서 '뉴스 후보 가져오기' 버튼을 눌러주세요.")
 
 # 5. 하단 결과창
 st.markdown("---")
@@ -123,19 +125,21 @@ st.header("📋 최종 공유 텍스트")
 
 if st.session_state['selected_articles']:
     today_str = datetime.now().strftime('%Y년 %m월 %d일')
-    # 요청하신 문구로 수정
-    final_text = f"■ {today_str} 부동산 뉴스 브리핑\n 관련기사들은 전날 기준 기사로 정리되었습니다.\n\n\n"
+    final_text = f"■ {today_str} 부동산 뉴스 브리핑\n관련기사들은 전날 기준 기사로 정리되었습니다.\n\n\n"
     
     for cat in CATEGORIES.keys():
         articles = [a for a in st.session_state['selected_articles'].values() if a['cat'] == cat]
         if articles:
             final_text += f"<{cat}>\n"
             for i, article in enumerate(articles):
+                # 번호. 제목 (출처) -> 링크 순서로 깔끔하게 정리 (에러 문구 완전 제거)
                 final_text += f"{i+1}. {article['title']} ({article['source']})\n{article['link']}\n\n"
             final_text += "\n"
 
     st.text_area("카톡 복사용 결과", final_text, height=450)
     
-    if st.button("🗑 선택 초기화", type="secondary"):
+    if st.button("🗑 선택 초기화", type="secondary", use_container_width=True):
         st.session_state['selected_articles'] = {}
         st.rerun()
+else:
+    st.write("선택된 기사가 없습니다. 위 리스트에서 기사를 체크해 주세요.")
